@@ -5,7 +5,7 @@
 # Features
 1. Just 1 page for client (HTML) and 1 page for server (PHP)
 1. Every form field can either be GET or POST
-1. Triple mode for errors and success - they can be presented in the form itself, in a blank page or redirect to external pages
+1. Triple mode for errors and success - they can be presented right in the form itself, in a blank page or redirect to external pages
 1. Dual mode for results - they can be either sent, logged or both
 1. The form can be limited to be used in specific domains only
 2. Auto reply can be sent automatically
