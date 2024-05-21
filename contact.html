@@ -1,0 +1,119 @@
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact</title>
+<style>
+:root {
+  --text-for-light: black;
+  --bkg-for-light: white;
+  --link-for-light: blue;
+  --required-for-light: red;
+  --issues-for-light: red;
+  --text-for-dark: white;
+  --bkg-for-dark: black;
+  --link-for-dark: DeepSkyBlue;
+  --required-for-dark: orangered;
+  --issues-for-dark: salmon;
+  --input-for-dark: gray;
+  --disabled-for-dark: lightgray;
+}
+body {color: var(--text-for-light); background-color: var(--bkg-for-light);}
+a {color: var(--link-for-light);}
+.required {color: var(--required-for-light);}
+.error {color: var(--issues-for-light);}
+.stress {font-weight: bold;}
+@media (prefers-color-scheme: dark) {
+    body {color: var(--text-for-dark); background-color: var(--bkg-for-dark);}
+    a {color: var(--link-for-dark);}
+    .required {color: var(--required-for-dark);}
+    .error {color: var(--issues-for-dark);}
+    textarea, input[type="text"], input[type="email"] {background-color: var(--input-for-dark);}
+}
+textarea:hover, input[type="text"]:hover, input[type="email"]:hover {background-color: yellow;}
+.smaller {font-size: smaller}
+.hidden {display:none;}
+.center {text-align: center;}
+@media only screen and (min-width: 768px) {
+  body {margin: 10% 15% 5% 20%;}
+}
+</style>
+</head>
+<body>
+<h1>Contact Form</h1>
+<span class="smaller"><u><span class="required">*</span> = required fields</u></span>
+
+<form method="post" action="/contact.php" onsubmit="return checker(this)";>
+<input type=hidden name=redirect value=false>
+<input type=hidden name=sendto value=1>
+<input type=hidden name=return_link_url value=javascript:window.close()>
+<input type=hidden name=return_link_title value="Close this window">
+
+<table>
+<tr>
+<td>Your name:</td>
+<td><input type=text name=realname size=30 maxlength=29></td>
+</tr>
+<tr>
+<td><span class="required">*</span> Your e-mail:</td>
+<td><input type=email name=email size=40 maxlength=39
+onkeyup="checkaddress(form, this)" onchange="checkaddress(form, this)" required>
+<div id="emailconfirm" class="hidden">
+<span class="required">*</span>
+Is this really your e-mail? <input type=checkbox name=validemail required>
+</span></div></td>
+</tr>
+<tr>
+<td><span class="required">*</span> Subject:</td>
+<td><input type=text name=subject size=40 maxlength=39 required></td>
+</tr>
+<tr>
+<td><span class="required">*</span> Your message:</td>
+<td><textarea name=message[comments] rows=6 cols=30 required></textarea></td>
+</tr>
+<tr>
+<td><span class="required">*</span> How many fingers do humans typically have in their hands?<br /><sup>(to prove you\'re not a spammer)</sup></td>
+<td><input type=text name=antispam size=40 maxlength=39 required></td>
+</tr>
+<tr>
+<td><input type=submit value="Submit" name="submit">
+&nbsp&nbsp&nbsp<input type="reset" value="Clear"></td>
+</table>
+</form>
+<div id="submit" class="center hidden"></div>
+
+<script>
+function checkaddress(form, element) {
+  var hider="#emailconfirm", thedefault="inherit"
+  if (element.checkValidity()) {
+    if (document.querySelector(hider).style.display != thedefault)
+	document.querySelector(hider).style.display = thedefault
+  } else if (document.querySelector(hider).style.display == thedefault)
+	document.querySelector(hider).style.display = "none"
+}
+function checker(theform) {
+	var msg = "#submit", thedefault = "inherit"
+	msg = document.querySelectorAll(msg)
+	if (theform.redirect.value == "true") return true
+	const parseJson = async response => {
+	  const text = await response.text()
+	  try{
+	    const json = JSON.parse(text)
+	    return json
+	  } catch(err) {
+	    throw new Error("Did not receive JSON: " + err + ", instead received: " + text)
+	  }
+	}
+	const data = new URLSearchParams(new FormData(theform))
+	fetch(theform.action, {method: theform.method, body: data})
+//		.then(x => {x.json();)
+		.then(parseJson)
+		.then(y => {if (msg.length>0) {
+msg=msg[0]
+if (msg.style.display != thedefault)
+	msg.style.display = thedefault
+msg.innerHTML = y
+}
+		});
+	return false;
+}
+</script>
+</body>
